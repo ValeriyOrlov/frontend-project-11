@@ -1,8 +1,12 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import path from 'path';
 
 export default {
   mode: process.env.NODE_ENV || 'development',
+  entry: './src/index.js',
+    devServer: {
+    open: true,
+    host: 'localhost',
+  },
   module: {
     rules: [
       {
