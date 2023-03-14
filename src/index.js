@@ -1,8 +1,5 @@
 import  './style.scss';
 import  'bootstrap';
-
-const app = () => {
-    console.log('chokavo?');
-};
+import app from './app.js';
 
 app();
