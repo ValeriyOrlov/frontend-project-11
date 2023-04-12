@@ -7,7 +7,7 @@ const renderError = (fields, error) => {
     fields.rssInputFeedback.textContent = error;
 };
 
-const renderSuccess = (fields) => {
+const renderSuccess = (fields, i18Instance) => {
     const hadError = fields.rssInput.classList.contains('is-invalid');
     if (hadError) {
         fields.rssInput.classList.remove('is-invalid');
@@ -16,22 +16,19 @@ const renderSuccess = (fields) => {
         fields.rssInputFeedback.classList.remove('text-danger');
         fields.rssInputFeedback.classList.add('text-success');
     }
-    fields.rssInputFeedback.textContent = 'RSS load success';
+    fields.rssInputFeedback.textContent = i18Instance.t('success');
+   fields.rssInput.value = ''; // to view !!
+   fields.rssInput.focus(); // to view !!
 };
 
-export const render = (elements, initialState) => (path, value, prevValue) => {
-    console.log(initialState, prevValue);
-    switch (path) {
-        case 'form.validLinks':
-        renderSuccess(elements.fields);
-        break;
-
-        case 'form.error':
-        renderError(elements.fields, value);
-        break;
-        default:
+export default (elements, initialState, i18Instance) => (path, value, prevValue) => {
+    console.log(value)
+    switch (value) {
+        case 'success':
+            renderSuccess(elements.fields, i18Instance);
             break;
+        case 'error':
+            renderError(elements.fields, initialState.form.error);
     }
 };
 
-export default render;
