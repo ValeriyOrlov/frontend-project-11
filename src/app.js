@@ -1,8 +1,10 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
 import i18next from 'i18next';
+import axios from 'axios';
 import resources from './locales/index.js';
 import render from './render.js';
+import parser from './parser.js';
 
 export default () => {
     const defaultLanguage = 'ru';
@@ -20,6 +22,9 @@ export default () => {
             rssInputFeedback: document.querySelector('.feedback'),
         },
         submitButton: document.querySelector('button[type="submit"]'),
+        posts: document.querySelector('.posts'),
+        feeds: document.querySelector('.feeds'),
+        data: {},
     };
 //model
     const initialState = {
@@ -30,7 +35,8 @@ export default () => {
             error: '',
         },
     };
-    
+    const routes = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${url}`; //url with proxy
+
     const state = onChange(initialState, render(elements, initialState, i18Instance));
 //controllers
     elements.form.addEventListener('submit', (e) => {
@@ -52,12 +58,25 @@ export default () => {
             state.form.validLinks.push(link);
             state.form.valid = true;
             state.form.processState = 'sending';
+            axios.get(routes(link))
+            .then((promise) => {
+                if (!parser(promise.data.contents)) {
+                    state.form.error = i18Instance.t('parseError');
+                    state.form.processState = 'error';
+                } else {
+                    elements.data = parser(promise.data.contents);
+                    state.form.processState = 'sent';
+                }
+            })
+            .catch((networkError) => {
+                state.form.processState = 'error';
+                state.form.error = `network error: ${networkError}`;
+            });
         })
         .catch((err) => {
             state.form.error = err.errors.map((err) => i18Instance.t(err.key)).join('');
             state.form.valid = false;
             state.form.processState = 'error';
-            console.log(state.form.error)
         });
     });
 };
