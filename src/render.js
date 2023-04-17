@@ -7,25 +7,32 @@ const renderError = (fields, error) => {
     fields.rssInputFeedback.textContent = error;
 };
 
-const renderSuccess = (fields, i18Instance) => {
-    const hadError = fields.rssInput.classList.contains('is-invalid');
+const renderSuccess = (elements, i18Instance) => {
+    const hadError = elements.fields.rssInput.classList.contains('is-invalid');
     if (hadError) {
-        fields.rssInput.classList.remove('is-invalid');
+        elements.fields.rssInput.classList.remove('is-invalid');
     }
-    if (!fields.rssInputFeedback.classList.contains('text-success')) {
-        fields.rssInputFeedback.classList.remove('text-danger');
-        fields.rssInputFeedback.classList.add('text-success');
+    if (!elements.fields.rssInputFeedback.classList.contains('text-success')) {
+        elements.fields.rssInputFeedback.classList.remove('text-danger');
+        elements.fields.rssInputFeedback.classList.add('text-success');
     }
-    fields.rssInputFeedback.textContent = i18Instance.t('success');
-   fields.rssInput.value = ''; // to view !!
-   fields.rssInput.focus(); // to view !!
+    elements.fields.rssInputFeedback.textContent = i18Instance.t('success');
+    elements.fields.rssInput.value = '';
+    elements.fields.rssInput.focus();
+    const title = elements.data.title;
+    const description = elements.data.description;
+    const cardBorder = document.createElement('div');
+    cardBorder.classList('card, border-0');
+    //здесь дописываю обёртку оглавления фидов с шаблона и отрисовываю её
+    // нужно подумать, стоит ли выносить это в отдельную функцию
+
 };
 
-export default (elements, initialState, i18Instance) => (path, value, prevValue) => {
+export default (elements, initialState, i18Instance) => (path, value) => {
     console.log(value)
     switch (value) {
-        case 'success':
-            renderSuccess(elements.fields, i18Instance);
+        case 'sent':
+            renderSuccess(elements, i18Instance);
             break;
         case 'error':
             renderError(elements.fields, initialState.form.error);
