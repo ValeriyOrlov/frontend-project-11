@@ -19,12 +19,13 @@ const renderSuccess = (elements, i18Instance) => {
     elements.fields.rssInputFeedback.textContent = i18Instance.t('success');
     elements.fields.rssInput.value = '';
     elements.fields.rssInput.focus();
-    const title = elements.data.title;
+   /* const title = elements.data.title;
     const description = elements.data.description;
     const cardBorder = document.createElement('div');
     cardBorder.classList('card, border-0');
     //здесь дописываю обёртку оглавления фидов с шаблона и отрисовываю её
     // нужно подумать, стоит ли выносить это в отдельную функцию
+    */
 
 };
 
