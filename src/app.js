@@ -24,16 +24,16 @@ export default () => {
         submitButton: document.querySelector('button[type="submit"]'),
         posts: document.querySelector('.posts'),
         feeds: document.querySelector('.feeds'),
-        data: {},
+        data: [],
     };
 //model
     const initialState = {
         form: {
             valid: true,
             processState: 'filling',
-            validLinks: [],
             error: '',
         },
+        validLinks: [],
     };
     const routes = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${url}`; //url with proxy
 
@@ -52,31 +52,36 @@ export default () => {
                 notOneOf: () => ({key: 'notOneOf'}),
             }
         })
-        const schema = yup.string().url().notOneOf(initialState.form.validLinks);
+        const schema = yup.string().url().notOneOf(initialState.validLinks);
         schema.validate(inputData)
         .then((link) => {
-            state.form.validLinks.push(link);
+            state.validLinks.push(link);
             state.form.valid = true;
-            state.form.processState = 'sending';
-            axios.get(routes(link))
-            .then((promise) => {
-                if (!parser(promise.data.contents)) {
-                    state.form.error = i18Instance.t('parseError');
-                    state.form.processState = 'error';
-                } else {
-                    elements.data = parser(promise.data.contents);
-                    state.form.processState = 'sent';
-                }
-            })
-            .catch((networkError) => {
-                state.form.processState = 'error';
-                state.form.error = `network error: ${networkError}`;
-            });
         })
         .catch((err) => {
             state.form.error = err.errors.map((err) => i18Instance.t(err.key)).join('');
             state.form.valid = false;
             state.form.processState = 'error';
-        });
+        })
+        .then(() => {
+            if (initialState.form.valid) {
+                axios.get(routes(state.validLinks[state.validLinks.length - 1]))
+                .then((response) => {
+                    state.form.processState = 'sending';
+                    if (!parser(response.data.contents)) {
+                        state.form.error = i18Instance.t('parseError');
+                        state.form.processState = 'error';
+                    } else {
+                        elements.data.push(parser(response.data.contents));
+                        state.form.processState = 'sent';
+                    }
+                })
+                .catch((networkError) => {
+                    state.form.processState = 'error';
+                    state.form.error = `network error: ${networkError}`;
+                })
+            }
+        })
+        .then(() => state.form.processState = 'filling');
     });
 };
