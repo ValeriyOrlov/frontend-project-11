@@ -1,10 +1,50 @@
-/*
-task: 
-реализовать отрисовку оглавлений списков
-скорее всего нужно будет избавиться от кардбордермэйкер
-*/
+const itemFeedGenerator = (feeds) => {
+    const feedsCollection = feeds.map(({title, description}) => {
+        const feedItem = document.createElement('li');
+        feedItem.classList.add('list-group-item', 'border-0', 'border-end-0');
+        const feedTitle = document.createElement('h3');
+        feedTitle.classList.add('h6', 'm-0');
+        feedTitle.textContent = `${title}`;
+        const feedDescription = document.createElement('p');
+        feedDescription.classList.add('m-0', 'small', 'text-black-50');
+        feedDescription.textContent = `${description}`;
+        feedItem.appendChild(feedTitle);
+        feedItem.appendChild(feedDescription);
+        return feedItem;
+    });
+    return feedsCollection;
+};
 
-const cardBorderMaker = (title) => {
+const itemPostGenerator = (items) => {
+    const postItems = items.map(({ title, link }, id) => {
+        const postItem = document.createElement('li');
+        postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+
+        const postLink = document.createElement('a');
+        postLink.classList.add('fw-bold');
+        postLink.setAttribute('href', `${link}`);
+        postLink.setAttribute('data-id', `${id}`);
+        postLink.setAttribute('target', '_blank');
+        postLink.setAttribute('rel', 'noopener noreferrer');
+        postLink.textContent = `${title}`;
+
+        const button = document.createElement('button');
+        button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+        button.setAttribute('type', 'button');
+        button.setAttribute('data-id', `${id}`);
+        button.setAttribute('data-bs-toggle', 'modal');
+        button.setAttribute('data-bs-target', '#modal');
+        button.textContent = 'Search';
+        postItem.appendChild(postLink);
+        postItem.appendChild(button);
+
+        return postItem;
+    });
+
+    return postItems;
+};
+
+const containerGenerator = (title) => {
     const cardBorder = document.createElement('div');
     cardBorder.classList.add('card', 'border-0');
     const cardBody = document.createElement('div');
@@ -20,53 +60,6 @@ const cardBorderMaker = (title) => {
     return cardBorder;
 };
 
-const feeds = (data) => {
-    const feedsCollection = data.map(({ title, description }) => {
-        const feedItem = document.createElement('li');
-        feedItem.classList.add('list-group-item', 'border-0', 'border-end-0');
-        const feedTitle = document.createElement('h3');
-        feedTitle.classList.add('h6', 'm-0');
-        feedTitle.textContent = `${title}`;
-        const feedDescription = document.createElement('p');
-        feedDescription.classList.add('m-0', 'small', 'text-black-50');
-        feedDescription.textContent = `${description}`;
-        feedItem.appendChild(feedTitle);
-        feedItem.appendChild(feedDescription);
-
-        return feedItem;
-    });
-    return feedsCollection.reverse();  
-};
-
-const posts = (data) => {
-    const postsCollection = data.map(({ items }) => {
-        const postItems = items.map(({ title, description, link }, id) => {
-            const postItem = document.createElement('li');
-            postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-            const postLink = document.createElement('a');
-            postLink.classList.add('fw-bold');
-            postLink.setAttribute('href', `${link}`);
-            postLink.setAttribute('data-id', `${id}`);
-            postLink.setAttribute('target', '_blank');
-            postLink.setAttribute('rel', 'noopener noreferrer');
-            postLink.textContent = `${title}`;
-            const button = document.createElement('button');
-            button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-            button.setAttribute('type', 'button');
-            button.setAttribute('data-id', `${id}`);
-            button.setAttribute('data-bs-toggle', 'modal');
-            button.setAttribute('data-bs-target', '#modal');
-            button.textContent = 'Search';
-            postItem.appendChild(postLink);
-            postItem.appendChild(button);
-            return postItem;
-        });
-        return postItems;
-    });
-    
-    return postsCollection.flat().reverse();
-};
-
 const renderError = (fields, error) => {
     fields.rssInput.classList.add('is-invalid');
     if (!fields.rssInputFeedback.classList.contains('text-danger')) {
@@ -76,7 +69,7 @@ const renderError = (fields, error) => {
     fields.rssInputFeedback.textContent = error;
 };
 
-const renderSuccess = (elements, i18Instance) => {
+const renderNewData = (elements, state, i18Instance) => {
     const hadError = elements.fields.rssInput.classList.contains('is-invalid');
     if (hadError) {
         elements.fields.rssInput.classList.remove('is-invalid');
@@ -88,24 +81,28 @@ const renderSuccess = (elements, i18Instance) => {
     elements.fields.rssInputFeedback.textContent = i18Instance.t('success');
     elements.fields.rssInput.value = '';
     elements.fields.rssInput.focus();
-    const feedsContainer = cardBorderMaker('Feeds');
-    const newFeeds = feeds(elements.data);
-    newFeeds.forEach((item) => feedsContainer.querySelector('.list-group').append(item));
-    const postsContainer = cardBorderMaker('Posts');
-    const newPosts = posts(elements.data);
-    newPosts.forEach((item) => postsContainer.querySelector('.list-group').append(item));
+    const feedsContainer = containerGenerator('Feeds');
+    const feeds = itemFeedGenerator(state.data.feedItemsList);
+    feedsContainer.querySelector('.list-group').replaceChildren(...feeds);
+    const postsContainer = containerGenerator('Posts');
+    const posts = itemPostGenerator(state.data.postItemsList);
+    postsContainer.querySelector('.list-group').replaceChildren(...posts);
     elements.feeds.replaceChildren(feedsContainer);
     elements.posts.replaceChildren(postsContainer);
 };
 
-export default (elements, initialState, i18Instance) => (path, value) => {
+export default (elements, state, i18Instance) => (path, value) => {
     console.log(value)
     switch (value) {
         case 'sent':
-            renderSuccess(elements, i18Instance);
+            renderNewData(elements, state, i18Instance);
+            break;
+        case 'update': 
+            renderUpdate(elements, initialState);
             break;
         case 'error':
             renderError(elements.fields, initialState.form.error);
+            break;
     }
 };
 

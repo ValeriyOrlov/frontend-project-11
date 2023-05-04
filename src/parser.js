@@ -11,12 +11,12 @@ export default (stringContainingXMLSource) => {
     } else {
   // parsing succeeded
     const rssData = doc.documentElement;
-    const channel = rssData.childNodes[1];
+    const channel = rssData.children[0];
     const channelData = Array.from(channel.childNodes)
                              .filter((el) => el.nodeType !== 3)
                              .reduce((acc, node) => {
                                 if (node.nodeName === 'title' || node.nodeName === 'description') {
-                                    acc[node.nodeName] = node.innerHTML;
+                                    acc[node.nodeName] = node.textContent;
                                     return acc;
                                 }
                                 if (node.nodeName === 'item') {
@@ -26,7 +26,7 @@ export default (stringContainingXMLSource) => {
                                     const item = Array.from(node.childNodes)
                                                       .filter((el) => el.nodeType !== 3)
                                                       .reduce((acc, node) => {
-                                                        acc[node.nodeName] = node.innerHTML;
+                                                        acc[node.nodeName] = node.textContent;
                                                         return acc;
                                                       }, {});
                                     acc['items'].push(item);
