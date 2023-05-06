@@ -146,7 +146,6 @@ export default () => {
                 case 'Error':
                     state.form.error = 'Ресурс не содержит валидный RSS';
                     break;
-                default: state.form.error = 'DarkMagic';
             }          
             state.form.valid = false;
             watchedState.form.processState = 'error';
