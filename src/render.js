@@ -16,7 +16,7 @@ const itemFeedGenerator = (feeds) => {
 };
 
 const itemPostGenerator = (items) => {
-    const postItems = items.map(({ title, link }, id) => {
+    const postItems = items.map(({ title, link, id }) => {
         const postItem = document.createElement('li');
         postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -34,7 +34,7 @@ const itemPostGenerator = (items) => {
         button.setAttribute('data-id', `${id}`);
         button.setAttribute('data-bs-toggle', 'modal');
         button.setAttribute('data-bs-target', '#modal');
-        button.textContent = 'Search';
+        button.textContent = 'Просмотр';
         postItem.appendChild(postLink);
         postItem.appendChild(button);
 
@@ -69,7 +69,17 @@ const renderError = (fields, error) => {
     fields.rssInputFeedback.textContent = error;
 };
 
-const renderNewData = (elements, state, i18Instance) => {
+const renderReadPosts = (elements, state) => {
+    const links = elements.posts.querySelectorAll('a');
+    const readLinks = Array.from(links)
+                           .filter((link) => state.uiState.postsReadId.includes(link.getAttribute('data-id')));
+    readLinks.forEach((readLink) => {
+        readLink.classList.remove('fw-bold');
+        readLink.classList.add('fw-normal');
+    });
+};
+
+const renderSuccess = (elements, i18Instance) => {
     const hadError = elements.fields.rssInput.classList.contains('is-invalid');
     if (hadError) {
         elements.fields.rssInput.classList.remove('is-invalid');
@@ -81,27 +91,55 @@ const renderNewData = (elements, state, i18Instance) => {
     elements.fields.rssInputFeedback.textContent = i18Instance.t('success');
     elements.fields.rssInput.value = '';
     elements.fields.rssInput.focus();
-    const feedsContainer = containerGenerator('Feeds');
+};
+
+const renderFeeds = (elements, state) => {
+    const feedsContainer = containerGenerator('Фиды');
     const feeds = itemFeedGenerator(state.data.feedItemsList);
     feedsContainer.querySelector('.list-group').replaceChildren(...feeds);
-    const postsContainer = containerGenerator('Posts');
+    elements.feeds.replaceChildren(feedsContainer);
+};
+
+const renderPosts = (elements, state) => {
+    const postsContainer = containerGenerator('Посты');
     const posts = itemPostGenerator(state.data.postItemsList);
     postsContainer.querySelector('.list-group').replaceChildren(...posts);
-    elements.feeds.replaceChildren(feedsContainer);
     elements.posts.replaceChildren(postsContainer);
+    const links = elements.posts.querySelectorAll('a');
+    const readLinks = Array.from(links)
+                           .filter((link) => state.uiState.postsReadId.includes(link.getAttribute('data-id')));
+    readLinks.forEach((readLink) => {
+        readLink.classList.remove('fw-bold');
+        readLink.classList.add('fw-normal');
+    });
+};
+
+const renderModalWindowContent = (elements, state) => {
+    console.log(elements.modal.linkButton);
+    const readPost = state.uiState.readPost;
+    const { title, description } = readPost;
+    elements.modal.title.textContent = title;
+    elements.modal.description.textContent = description;
+    elements.modal.linkButton.setAttribute('href', state.uiState.readLink);
+    renderReadPosts(elements, state);
 };
 
 export default (elements, state, i18Instance) => (path, value) => {
     console.log(value)
     switch (value) {
         case 'sent':
-            renderNewData(elements, state, i18Instance);
+            renderSuccess(elements, i18Instance);
+            renderFeeds(elements, state);
+            renderPosts(elements, state);
             break;
         case 'update': 
-            renderUpdate(elements, initialState);
+            renderPosts(elements, state);
+            break;
+        case 'windowOpen':
+            renderModalWindowContent(elements, state, value);
             break;
         case 'error':
-            renderError(elements.fields, initialState.form.error);
+            renderError(elements.fields, state.form.error);
             break;
     }
 };
