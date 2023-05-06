@@ -2,21 +2,21 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/ValeriyOrlov/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/ValeriyOrlov/frontend-project-11/actions)",
-  "main": "index.js",
+  "main": "./src/index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ValeriyOrlov/rss-aggregator.git"
+    "url": "https://github.com/ValeriyOrlov/frontend-project-11"
   },
   "author": "ValeriyOrlov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ValeriyOrlov/rss-aggregator/issues"
+    "url": "https://github.com/ValeriyOrlov/frontend-project-11/issues"
   },
-  "homepage": "https://github.com/ValeriyOrlov/rss-aggregator#readme",
+  "homepage": "hhttps://github.com/ValeriyOrlov/frontend-project-11#readme",
   "devDependencies": {
     "autoprefixer": "^10.4.13",
     "css-loader": "^6.7.3",
