@@ -146,6 +146,7 @@ export default () => {
                 case 'Error':
                     state.form.error = 'Ресурс не содержит валидный RSS';
                     break;
+                default: state.form.error = 'Ошибка сети';
             }          
             state.form.valid = false;
             watchedState.form.processState = 'error';
