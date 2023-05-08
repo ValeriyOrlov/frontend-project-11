@@ -97,6 +97,11 @@ const renderSuccess = (i18Instance) => {
   rssInput.focus();
 };
 
+const renderSending = (i18Instance) => {
+  const rssInputFeedback = document.querySelector('.feedback');
+  rssInputFeedback.textContent = i18Instance.t('loading');
+}
+
 const renderFeeds = (elements, state) => {
   const feedsContainer = containerGenerator('Фиды');
   const feeds = itemFeedGenerator(state.data.feedItemsList);
@@ -132,6 +137,9 @@ const renderModalWindowContent = (elements, state) => {
 
 export default (elements, state, i18Instance) => (path, value) => {
   switch (value) {
+    case 'sending':
+      renderSending(i18Instance);
+      break;
     case 'sent':
       renderSuccess(i18Instance);
       renderFeeds(elements, state);

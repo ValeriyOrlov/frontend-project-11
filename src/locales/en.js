@@ -5,5 +5,6 @@ export default {
     parseError: 'The resource does not contain valid RSS',
     success: 'RSS uploaded successfully',
     AxiosError: 'Network Error',
+    loading: 'loading...',
   },
 };
