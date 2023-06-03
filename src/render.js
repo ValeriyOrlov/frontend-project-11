@@ -1,4 +1,4 @@
-import sanitizer from "./sanitizer.js";
+import sanitizer from './sanitizer.js';
 
 const itemFeedGenerator = (feeds) => {
   const feedsCollection = feeds.map(({ title, description }) => {
@@ -102,7 +102,7 @@ const renderSuccess = (i18Instance) => {
 const renderSending = (i18Instance) => {
   const rssInputFeedback = document.querySelector('.feedback');
   rssInputFeedback.textContent = i18Instance.t('loading');
-}
+};
 
 const renderFeeds = (elements, state) => {
   const feedsContainer = containerGenerator('Фиды');
