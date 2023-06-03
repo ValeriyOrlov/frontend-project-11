@@ -1,3 +1,5 @@
+import sanitizer from "./sanitizer.js";
+
 const itemFeedGenerator = (feeds) => {
   const feedsCollection = feeds.map(({ title, description }) => {
     const feedItem = document.createElement('li');
@@ -130,7 +132,7 @@ const renderModalWindowContent = (elements, state) => {
   const { readPost } = state.uiState;
   const { title, description } = readPost;
   modalTitleContainer.textContent = title;
-  modalDescriptionContainer.textContent = description;
+  modalDescriptionContainer.textContent = sanitizer(description);
   modalLinkButton.setAttribute('href', state.uiState.readLink);
   renderReadPosts(elements, state);
 };
