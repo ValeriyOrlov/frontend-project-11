@@ -5,7 +5,8 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode=production --node-env=production"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
     "@popperjs/core": "^2.11.6",
     "axios": "^1.3.5",
     "bootstrap": "^5.2.3",
+    "cheerio": "^1.0.0-rc.12",
     "i18next": "^22.4.14",
     "lodash": "^4.17.21",
     "on-change": "^4.0.2",
